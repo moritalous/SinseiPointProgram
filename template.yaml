@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  python3.8
+
+Globals:
+  Function:
+    Timeout: 60
+    MemorySize: 256
+
+Parameters:
+  URL:
+    Type: String
+    Default: https://www.shinseibank.com/entry/
+  ACCOUNT:
+    Type: String
+  BIRTHDAYYEAR:
+    Type: String
+  BIRTHDAYMONTH:
+    Type: String
+  BIRTHDAYDAY:
+    Type: String
+  TPOINTNO:
+    Type: String
+  EMAIL:
+    Type: String
+
+Resources:
+  SSPFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Environment:
+        Variables:
+          URL:
+            Ref: URL
+          ACCOUNT: 
+            Ref: ACCOUNT
+          BIRTHDAY_YEAR:
+            Ref: BIRTHDAYYEAR
+          BIRTHDAY_MONTH:
+            Ref: BIRTHDAYMONTH
+          BIRTHDAY_DAY:
+            Ref: BIRTHDAYDAY
+          TPOINT_NO:
+            Ref: TPOINTNO
+          EMAIL: 
+            Ref: EMAIL
+      Events:
+        ScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0, 0, 2, *, ?, *)
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./app
+      DockerTag: python3.8-v1
+
+Outputs:
+  SSPFunction:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt SSPFunction.Arn
